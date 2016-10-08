@@ -45,7 +45,7 @@ public class QueryServlet extends HttpServlet {
 
 			if (!hasAuthorParam && !hasSearchParam) {
 				out.println("<h3>Please select an author or enter a search term!</h3>");
-				out.println("<p><a href='start'>Back to Select Menu</a></p>");
+				out.println("<p><a href='" + response.encodeURL("start") + "'>Back to Select Menu</a></p>");
 			}
 			else {
 				conn = pool.getConnection();
@@ -74,7 +74,7 @@ public class QueryServlet extends HttpServlet {
 				}
 				else {
 					// Print the result in an HTML from inside a table
-					out.println("<form method='get' action='cart'>");
+					out.println("<form method='get' action='" + response.encodeURL("cart") + "'>");
 					out.println("<input type='hidden' name='todo' value='add' />");
 					out.println("<table border='1' cellpadding='6'>");
 					out.println("<tr>");
@@ -103,8 +103,7 @@ public class QueryServlet extends HttpServlet {
                		out.println("<input type='reset' value='CLEAR' /></form>");
  
                		// Hyperlink to go back to search menu
-               		out.println("<p><a href='start'>Back to Select Menu</a></p>");
-
+               		out.println("<p><a href='" + response.encodeURL("start") + "'>Back to Select Menu</a></p>");
                		// Show "View Shopping Cart" if the cart is not empty
 		        	HttpSession session = request.getSession(false); //check if session exists
 		        	if (session != null) {
@@ -113,7 +112,7 @@ public class QueryServlet extends HttpServlet {
 		        			// Retrieve the shopping cart for this session, if any. Otherwise, create one.
 		        			cart = (Cart) session.getAttribute("cart");
 		        			if (cart != null && !cart.isEmpty()) {
-		        				out.println("<P><a href='cart?todo=view'>View Shopping Cart</a></p>");
+		        				out.println("<P><a href='" + response.encodeURL("cart?todo=view") +"'>View Shopping Cart</a></p>");
 		        			}
 		        		}
 		        	}

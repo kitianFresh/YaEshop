@@ -34,6 +34,32 @@ public class CartServlet extends HttpServlet {
 
 		// Retrieve current HTTPSession object. If none, create one.
 		HttpSession session = request.getSession(true);
+		if (session != null && session.isNew()) {
+			System.out.println("CharacterEncoding = " + request.getCharacterEncoding());
+			System.out.println("ContentType = " + request.getContentType());
+			System.out.println("ContextPath = " + request.getContextPath());
+			System.out.println("LocalAddr = " + request.getLocalAddr());
+			System.out.println("LocalName = " + request.getLocalName());
+			System.out.println("LocalPort = " + request.getLocalPort());
+			System.out.println("PathInfo = " + request.getPathInfo());
+			System.out.println("PathInfoTranslated = " + request.getPathTranslated());
+			System.out.println("RemoteAddr = " + request.getRemoteAddr());
+			System.out.println("RemoteHost = " + request.getRemoteHost());
+			System.out.println("RemotePort = " + request.getRemotePort());
+			System.out.println("RemoteUser = " + request.getRemoteUser());
+			System.out.println("RemoteURI = " + request.getRequestURI());
+			System.out.println("RemoteURL = " + request.getRequestURL());
+			
+			System.out.println("encodeURL = " + response.encodeURL(request.getContextPath()));
+		}
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				System.out.println("cookie id = " + cookie.getValue());
+			}
+		}
+		System.out.println("session id = " + session.getId());
+		
 		Cart cart;
 		synchronized (session) {  // synchronized to prevent concurrent updates
 			// Retrieve the shopping cart for this session, if any. Otherwise, create one.
@@ -43,7 +69,9 @@ public class CartServlet extends HttpServlet {
 				session.setAttribute("cart", cart);  // Save it into session
 			}
 		}
-
+		
+		
+		
 		Connection conn = null;
 		Statement stmt = null;
 		String sqlstr = null;
@@ -129,7 +157,7 @@ public class CartServlet extends HttpServlet {
 					out.println("<td>" + title +  "</td>");
 					out.println("<td>" + price +  "</td>");
 
-					out.println("<td><form method='get'>");
+					out.println("<td><form method='get' action='" + response.encodeURL("cart") +"'>");
 					out.println("<input type='hidden' name='todo' value='update' />");
 					out.println("<input type='hidden' name='id' value='" + id + "' />");
 					out.println("<input type='text' size='3' name='qty"
@@ -137,7 +165,7 @@ public class CartServlet extends HttpServlet {
 					out.println("<input type='submit' value='Update' />");
 					out.println("</form></td>");
 
-					out.println("<td><form method='get'>");
+					out.println("<td><form method='get' action='" + response.encodeURL("cart") +"'>");
 					out.println("<input type='submit' value='Remove' />");
 					out.println("<input type='hidden' name='todo' value='remove' />");
 					out.println("<input type='hidden' name='id' value='" + id + "' />");
@@ -149,12 +177,12 @@ public class CartServlet extends HttpServlet {
             	out.printf("%.2f</td></tr>", totalPrice);
             	out.println("</table>");
 	        }
-	        out.println("<p><a href='start'>Select More Books...</a></p>");
+	        out.println("<p><a href='" + response.encodeURL("start") + "'>Select More Books...</a></p>");
 
 	        // Display the Checkout
 	        if (!cart.isEmpty()) {
 	            out.println("<br /><br />");
-	            out.println("<form method='get' action='checkout'>");
+	            out.println("<form method='get' action='" + response.encodeURL("checkout") + "'>");
 	            out.println("<input type='submit' value='CHECK OUT'>");
 	            out.println("<p>Please fill in your particular before checking out:</p>");
 	            out.println("<table>");

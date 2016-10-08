@@ -44,7 +44,7 @@ public class EntryServlet extends HttpServlet {
 			out.println("<html><head><title>Welcome to YaEshop</title></head><body>");
          	out.println("<h2>Welcome to Yet Another E-BookShop</h2>");
          	// Begin an HTML form
-         	out.println("<form method='get' action='search'>");
+         	out.println("<form method='get' action='" +response.encodeURL("search") + "'>");
  
          	// A pull-down menu of all the authors with a no-selection option
          	out.println("Choose an Author: <select name='author' size='1'>");
@@ -73,7 +73,7 @@ public class EntryServlet extends HttpServlet {
         			// Retrieve the shopping cart for this session, if any. Otherwise, create one.
         			cart = (Cart) session.getAttribute("cart");
         			if (cart != null && !cart.isEmpty()) {
-        				out.println("<P><a href='cart?todo=view'>View Shopping Cart</a></p>");
+        				out.println("<P><a href='" +  response.encodeURL("cart?todo=view")+ "'>View Shopping Cart</a></p>");
         			}
         		}
         	}

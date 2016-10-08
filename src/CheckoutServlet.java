@@ -138,7 +138,7 @@ public class CheckoutServlet extends HttpServlet {
 			out.println("</table>");
 
 			out.println("<h3>Thank you.</h3>");
-			out.println("<p><a href='start'>Back to Select Menu</a></p>");
+			out.println("<p><a href='" + response.encodeURL("start") + "'>Back to Select Menu</a></p>");
 			// Commit for ALL the books ordered.
 			conn.commit();
 

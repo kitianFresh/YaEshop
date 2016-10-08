@@ -230,6 +230,8 @@ Tan Ah Teck, More Java for dummies, $22.22
 &emsp;&emsp;实验也证明合理我们在（没有请求过/cart前提下）请求/start和/search时，request和response header中都没有Cookie
 ，因为他们都不创建session；但是当我第一次请求/cart时，response header中多了个Set-Cookie，因为第一次请求CartServlet是要创建新session的；此后一系列的request header中都自动添加了Cookie了；重要的事情来了，Tomcat8 中的Servlet都是单例模式，他是如何知道request来自哪里，又是如何轻而易举的通过request.getSession()获取到客户端想要的那个session呢？查看Set-Cookie选项你就知道了，原来服务端生成了一个JSESSIONID=4525C1896DCB743808B956F3EF9DC623唯一标示，这样servlet就可以轻而易举的维持不同session了；因为每一个请求都自带了这个ID。也就是说，**Servlet Session的实现依赖于客户端的cookie设置**,如果你要在禁止cookie的情况下也能实现会话，那么你需要做额外处理了。比如根据IP唯一表示（但ip也可能变化），或者让用户登陆 使用userid做唯一标示，最后就是将unique id隐藏在html中，每一次都通过url附带这个id参数发送出去，然后服务端取出来。
 
+&emsp;&emsp;linux下 的chrome开启多个窗口默认共享同一个域下的cookie；
+
 >>A servlet should be able to handle cases in which the client does not choose to join a session, such as when 
 >>cookies are intentionally turned off. Until the client joins the session, isNew returns true. If the client 
 >>chooses not to join the session, getSession will return a different session on each request, and isNew will 
