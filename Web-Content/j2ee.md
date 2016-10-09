@@ -103,6 +103,12 @@ sudo service tomcat8 stop
 sudo service tomcat8 start
 sudo service tomcat8 restart
 ```
+&emsp;&emsp;如果你想要tomcat能被同一个局域网下的其他主机访问，你必须打开防火墙端口；windows在设置中有关闭防火墙，自行google；linux下使用ufw命令；如果你想要广域网上的其他主机通过IP地址访问你的tomcat，要么你的主机直接是有public ip，如果你在内网，你必须打开路由器的NAT，自行google；
+```
+sudo ufw allow 8000/tcp
+sudo ufw status verbose
+```
+
 &emsp;&emsp;以上的设置是成功的，但是你无法再用自己的账户访问/opt/tomcat8了，因为他属于tomcat8用户（chown），这个很蛋疼；除非你切换到root用户。其实我们不一定要这样设置一个新用户来运行tomcat8，之所以这样设置是出于安全考虑的；下面来看看用户管理；
 你会好奇这个命令是干什么？
 
