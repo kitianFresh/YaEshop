@@ -42,7 +42,7 @@ public class EntryServlet extends HttpServlet {
 			ResultSet rset = stmt.executeQuery(sqlstr);
 
 			out.println("<html><head><title>Welcome to YaEshop</title></head><body>");
-         	out.println("<h2>Welcome to Yet Another E-BookShop</h2>");
+         	out.println("<center><h2>Welcome to Yet Another E-BookShop</h2>");
          	// Begin an HTML form
          	out.println("<form method='get' action='" +response.encodeURL("search") + "'>");
  
@@ -78,7 +78,7 @@ public class EntryServlet extends HttpServlet {
         		}
         	}
 
-        	out.println("</body></html>");
+        	out.println("</center></body></html>");
 		} catch (SQLException ex) {
 			out.println("<h3>Service not available. Please try again later!</h3></body></html>");
 			Logger.getLogger(EntryServlet.class.getName()).log(Level.SEVERE, null, ex);

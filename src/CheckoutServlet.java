@@ -41,7 +41,7 @@ public class CheckoutServlet extends HttpServlet {
  
 		try {
 			out.println("<html><head><title>Checkout</title></head><body>");
-			out.println("<h2>YAEBS - Checkout</h2>");
+			out.println("<center><h2>YAEBS - Checkout</h2>");
 			// Retrieve the Cart
 			session = request.getSession(false);
 			if (session == null) {
@@ -142,7 +142,7 @@ public class CheckoutServlet extends HttpServlet {
 			// Commit for ALL the books ordered.
 			conn.commit();
 
-			out.println("</body></html>");
+			out.println("</center></body></html>");
 			cart.clear(); // empty the cart
 		} catch (SQLException ex) {
 			try {

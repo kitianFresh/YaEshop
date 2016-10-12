@@ -41,7 +41,7 @@ public class QueryServlet extends HttpServlet {
 			String searchWord = request.getParameter("search");
 			boolean hasSearchParam = searchWord != null && ((searchWord = searchWord.trim()).length() > 0);
 			out.println("<html><head><title>Query Results</title></head><body>");
-			out.println("<h2>YAEBS - Query Results<h2>");
+			out.println("<center><h2>YAEBS - Query Results<h2>");
 
 			if (!hasAuthorParam && !hasSearchParam) {
 				out.println("<h3>Please select an author or enter a search term!</h3>");
@@ -118,7 +118,7 @@ public class QueryServlet extends HttpServlet {
 		        	}
 				}
 			} 
-			out.println("</body></html>");
+			out.println("</center></body></html>");
 		} catch (SQLException ex) {
 			out.println("<h3>Service not available. Please try again later!</h3></body></html>");
 			Logger.getLogger(QueryServlet.class.getName()).log(Level.SEVERE, null, ex);

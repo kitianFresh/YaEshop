@@ -64,7 +64,7 @@ public class CartServlet extends HttpServlet {
 			conn = pool.getConnection(); // get a connection pool
 			stmt = conn.createStatement();
 			out.println("<html><head><title>Shopping Cart</title></head><body>");
-			out.println("<h2>YAEBS - Your Shopping Cart</h2>");
+			out.println("<center><h2>YAEBS - Your Shopping Cart</h2>");
 
 			// This servlet handles 4 cases:
 			// (1) todo=add id=1001 qty1001=5 [id=1002 qty1002=1 ...]
@@ -180,7 +180,7 @@ public class CartServlet extends HttpServlet {
 				out.println("</form>");
 			}
 
-			out.println("</body></html>");
+			out.println("</center></body></html>");
 		} catch (SQLException ex) {
 			out.println("<h3>Service not available. Please try again later!</h3></body></html>");
 			Logger.getLogger(CartServlet.class.getName()).log(Level.SEVERE, null, ex);
