@@ -243,7 +243,29 @@ Tan Ah Teck, More Java for dummies, $22.22
 >>chooses not to join the session, getSession will return a different session on each request, and isNew will 
 >>always return true.
 
+## Authentication and Authorization
+### 认证
+&emsp;&emsp;Tomcat容器做认证不需要应用本身认证，最简单的tomcat-user.xml和server.xml中就有manager的认证配置，默认采用的是UserDatabaseRealm，他需要配套tomcat-user.xml中的角色配置。其实就是所有的用户和角色都配置到tomcat-user.xml中，然后再通过server.xml告诉tomcat容器使用的Realm是UserDatabaseRealm；最后当然还要通过web.xml来具体限制资源访问权限；但是UserDatabaseRealm一般只是开发时候这样配置，如果是production，你最好使用数据库形式
+&emsp;&emsp;你也可采用数据库的形式，即JDBCRealm，就是用户密码角色存储在数据库中，然后配置；此时就是在server.xml中配置说Realm采用的是JDBC就行了，然后设置相应的数据库参数，当然数据库的设计遵循一定的规则，这个可以参考官方文档；此时就不用在tomcat-user.xml中配置用户了，你需要将用户数据插入到数据库中；应用资源访问权限设置和前者一样；
+&emsp;&emsp;这里要特别注意的是你在修改server.xml后必须重启tomcat；但是如果在eclipse中开发即使重启也没有用，你必须删除原来的server，重新选择server，然后重启eclipse才行。
+&emsp;&emsp;这里删除server后遇到一个问题，就是不能选择tomcat8了，我的环境是ubuntu16.04和eclipse neon，本地安装的是tomcat8.0.37；
+  1. 关闭eclipse；
+  2. 你需要进入%eclipse_workspace%/.metadata/.metadata/.plugins/org.eclipse.core.runtime/.settings,然后删除org.eclipse.jst.server.tomcat.core.prefs和org.eclipse.wst.server.core.prefs；
+  3. 进入Window-->preferences->server->runtime environment->add 一个tomcat；选择%CATALINA_HOME%就行了；
+  4. 如果在运行server的时候出现问题，那你就把%CATALINA_HOME%/conf/中的文件全部复制到%eclipse_workspace%/Servers/Tomcat V8.0 Server at localhost-config目录下面；但是最好的方法是将这几个文件软链接到正真的%CATALINA_HOME%/conf/下面的相同文件，这样改动就只用改动一处了；如果是在默认情况下，eclipse实际上会通过/usr/share/tomcat8/conf/来找conf文件，但是手动安装的tomcat8在你自己的目录下面，你需要创建软链接；
+```
+cd /usr/share/tomcat8
+sudo ln -s /%CATALINA_HOME%/conf conf
+sudo chmod -R a+rwx /usr/share/tomcat7/conf
+```
 
+###j2ee认证参考
+  - [Authentication and Authorization](https://developer.appway.com/screen/ViewDocument/bookId/1272417268326?path=1272417268326|1258947867223|1258947867336&language=en&searchQuery=Screen%20Editor%20Guide&versionFilter=LatestCommittedFilter)
+  - [Enable Basic Authentication for webapps in Apache Tomcat 8 - PART 1](http://sureshatt.blogspot.com/2016/05/enable-basic-authentication-for-webapps.html)
+  - [Enable Basic Authentication for webapps in Apache Tomcat 8 - PART 2 (Password Hashing)](http://sureshatt.blogspot.com/2016/05/enable-basic-authentication-for-webapps_16.html)
+  - [How do I use a JDBC Realm with Tomcat and MySQL?](http://www.avajava.com/tutorials/lessons/how-do-i-use-a-jdbc-realm-with-tomcat-and-mysql.html?page=2)
+  - [Could not load the Tomcat server configuration](http://stackoverflow.com/questions/30962732/could-not-load-the-tomcat-server-configuration)
+  - [Production Server Overview](http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/Security.html)
 
 ## 参考
   - [How to Install Apache Tomcat 8.0.x on Linux](http://linoxide.com/linux-how-to/install-tomcat-8-0-x-linux/)
