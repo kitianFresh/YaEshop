@@ -26,7 +26,7 @@ sudo service tomcat8 start/stop/restart
 #### Step 1: Download
 &emsp;&emsp;可以去[官网](http://tomcat.apache.org)下载tomcat8.0.37，选择Binary distribution => Core => Download 来下载"tar.gz"格式的包;也可以使用命令下载8.0
 ```
-wget http://apache.fayea.com/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.tar.gz)
+wget http://apache.fayea.com/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.tar.gz
 ```
 
 #### Step 2: Install
@@ -35,7 +35,7 @@ wget http://apache.fayea.com/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.ta
 cd ~/Download # enter tomcat package dir
 sudo tar -xzf apache-tomcat-8.0.37.tar.gz -C /opt  # extract archieve to directory /opt
 
-// 这里创建一个软链接到apache-tomcat-8.0.37的目的就是方便以后更换tomcat版本，只用更换apache-tomcat-8.0.37目录下的内容即可
+// 这里创建一个软链接到apache-tomcat-8.0.37的目的就是方便以后更换tomcat版本，只用更换软链接的指向的实际tomcat目录即可，就是更改一下软链接
 // 另外，注意/opt/tomcat8后面不要带'/'
 sudo ln -s /opt/apache-tomcat-8.0.37/ /opt/tomcat8 # create link for conveniece
 ```
@@ -116,13 +116,13 @@ sudo ufw status verbose
 sudo useradd -s /sbin/nologin tomcat8                 # add user to run tomcat service
 ```
 
-&emsp;&emsp;这里关于用户管理只讲解本教程相关问题，更多请参考鸟哥私房菜；再一次提醒，***linux下的终端terminal不是shell***，千万不要被表面迷惑；我们都知道linux是***多用户多任务的系统***；但是由于现在我们都是用微机也就是个人电脑，基本上就你一个人在用，所以没有感觉什么叫多用户多任务；如果回到过去，没有盖茨和乔布斯的时代，那个时候个人是很难用到电脑的，你要用计算机，你得申请某一个时段，到机房去，在一个显示器面前使用命令行，登陆，然后进项相应任务，但你看到的并不是主机，那只是从大型主机连接过来的显示器或者说终端（现在你应该知道为啥叫terminal了吧），所以很多个科学家登陆到同一台主机同一时间段做任务，这就需要主机操作系统可以进行多用户多任务管理了。
+&emsp;&emsp;这里关于用户管理只讲解本教程相关问题，更多请参考鸟哥私房菜；再一次提醒，***linux下的终端terminal不是shell***，千万不要被表面迷惑；我们都知道linux是***多用户多任务的系统***；但是由于现在我们都是用微机也就是个人电脑，基本上就你一个人在用，所以没有感觉什么叫多用户多任务；如果回到过去，没有盖茨和乔布斯的时代，那个时候个人是很难用到电脑的，你要用计算机，你得申请某一个时段，到机房去预约一个机位，在一个显示器面前使用命令行，登陆，然后进行相应任务，但你看到的并不是主机，那只是从大型主机连接过来的显示器或者说终端（现在你应该知道为啥叫terminal了吧），所以有很多个科学家登陆到同一台主机同一时间段做任务，这就需要主机操作系统可以进行多用户多任务管理了。
 
-&emsp;&emsp;同样，现在，我们人手一台计算机，其他人不用了，就你一个人用，当然可以同时执行多个任务，这个在操作系统分时调度任务大家应该都知道，并且如果你用的是Windows，你就更不可能很好的理解什么叫多用户了。如果是在linux下面，初学者也很少碰到多用户管理，因为一直是自己用。但是实际上，linux上有很多用户(**用户不一定是人，也可以是程序**)，并且有的还和你一起在同时使用linux呢。
+&emsp;&emsp;同样，现在，我们人手一台计算机，其他人不用了，就你一个人用，当然可以同时执行多个任务，这个在操作系统分时调度任务大家应该都知道，但是对于多用户，我们似乎了解的不多。并且如果你用的是Windows，你就更不可能很好的理解什么叫多用户了。如果是在linux下面，初学者也很少碰到多用户管理，因为一直是自己用。但是实际上，linux上有很多用户(**用户不一定是人，也可以是程序**)，并且有的还和你一起在同时使用linux呢。
 
-&emsp;&emsp;现在在linux上，你使用Ctrl+Alt+T打开终端Terminal（记住那不是shell），严格来说这是一个终端模拟器，并不是真正的终端；真正的终端会占用整个显示器的，就是字符终端，不信你可以试试Ctrl+Alt+F1～F12，这是不同的终端。终端控制显示器，而不同的用户和任务会控制终端，当操作系统调度到该任务的时候，如果他需要用到终端显示器，此时终端控制权就给了该任务（比如用C语言写一个hello world）；因此，你登陆后其实默认只是你自己的账户，你也可以切换到root账户，但是你会发现目录什么的都变了。这就是多用户显示出来的区别了，现在root掌管了你的虚拟终端，并且你以root身份登陆到了shell中，即root用户使用shell（shell也有很多种，bash，zsh等等）控制了你的终端模拟器（就是你看到的那个黑框框），你会看到root@your-host-name:,对，这个就说明现在是root在掌管了。你可以exit，然后就回到你现在的用户了，变成了your-name@your-host-name对吧。但是你还是在同一个黑框框下面（记住他是虚拟终端而不是shell，shell是一个程序在运行，而terminal负责输入输出显示器），你先在应该有了terminal和shell的区别的概念了吧，同时也知道了多用户的概念了吧。
+&emsp;&emsp;现在在linux上，你使用Ctrl+Alt+T打开终端Terminal（记住那不是shell），严格来说这是一个终端模拟器，并不是真正的终端；真正的终端会占用整个显示器的，就是字符终端，不信你可以试试Ctrl+Alt+F1～F12，这是不同的终端。终端控制显示器，而不同的用户和任务会控制终端，当操作系统调度到该任务的时候，如果他需要用到终端显示器，此时终端控制权就给了该任务（比如用C语言写一个hello world程序，编译成可执行程序，运行一下，当操作系统调度到你的任务时，由于你需要使用标准输出即当前运行环境的终端，此时如果还有其他程序在使用终端显示器，而且你只有一个显示器，那么你的hello进程可能会被挂起，当然一般情况下是直接看到输出了，因为任务很简单）；因此，你登陆后其实默认只是你自己的账户，你也可以切换到root账户，但是你会发现目录什么的都变了。这就是多用户显示出来的区别了，现在root掌管了你的虚拟终端，并且你以root身份登陆到了shell中，即root用户使用shell（shell也有很多种，bash，zsh等等）控制了你的终端模拟器（就是你看到的那个黑框框），你会看到root@your-host-name:,对，这个就说明现在是root在掌管了。你可以exit，然后就回到你现在的用户了，变成了your-name@your-host-name对吧。但是你还是在同一个黑框框下面（记住他是虚拟终端而不是shell，shell是一个程序在运行，而terminal负责标准输入输出），你现在应该有了terminal和shell的区别的概念了吧，同时也知道了多用户的概念了吧。
 
-&emsp;&emsp;不过你可能有疑惑，并没有实现多个用户同时登陆啊，是的，刚才每次只有一个用户在执行。其实你可以打开多个terminal，然后在每一个terminal中使用sudo su account-name来切换用户，这几个终端登陆不同的用户，结果，你发现几个不同的用户同时登陆了你的主机了。如果你的主机开放了端口并且可以当做服务器，别人如果有你的账户和密码，也是可以通过ssh username@host-ip（如果是内网直接ssh username@hostname也可以）远程登陆到你的主机的。不信，如果你开通了腾讯云主机，你可以使用这种方法登陆你的云主机。我们如何添加一个用户呢？很简单使用adduser或者useradd就可以了。
+&emsp;&emsp;不过你可能有疑惑，并没有实现多个用户同时登陆啊，是的，刚才每次只有一个用户在执行。其实你可以打开多个terminal，然后在每一个terminal中使用sudo su account-name来切换用户，这几个终端登陆不同的用户，结果，你发现几个不同的用户同时登陆了你的主机了。如果你的主机开放了端口并且可以当做服务器，别人如果有你的账户和密码，也是可以通过ssh username@host-ip（如果是内网直接ssh username@hostname也可以，需要配置映射）远程登陆到你的主机的（当然ssh是需要提前分发好秘钥的）。不信，如果你开通了腾讯云主机，你可以使用这种方法登陆你的云主机。我们如何添加一个用户呢？很简单使用adduser或者useradd就可以了。
 
 &emsp;&emsp;再回到我们的主题，上面那个sudo useradd -s /sbin/nologin tomcat8中，-s /sbin/nolongin其实是设置这个用户的登陆方式。这里其实压根没有给tomcat8登陆方式，因为ubuntu16.04没有这个目录和shell。正确的应该是/usr/sbin/nologin或者/bin/false,你可以到相应的目录找到这两个程序，他们都是禁止登陆的。也就是你使用sudo su tomcat8没有用的，你不能登陆。
 
@@ -141,7 +141,7 @@ sudo chown -R kinny:kinny /opt/tomcat8/
 ```
 
 #### Step 3:setup user account
-&emsp;&emsp;为了通过web方式管理webapp和tomcat，可以设置tomcat用户
+&emsp;&emsp;为了通过web方式管理webapp和tomcat，可以设置tomcat用户和角色
 在/opt/tomcat8/conf目录下找到tomcat-users.xml,设置用户如下：
 ```
 <role rolename="manager-gui"/>
@@ -204,9 +204,9 @@ Tan Ah Teck, More Java for dummies, $22.22
 &emsp;&emsp;一般情况下，我们给用户的输入是通过html，用户输入通过前端js等操作，此时js可以对用户的输入合法性等进行简单验证而不用麻烦服务端进行，此时也可以降低服务端请求压力。但是仅仅在客户端验证并不安全，因为有恶意用户可能不通过页面操作，而是自己通过js脚本或者其他方式（如直接在浏览器输入url及相应参数访问后台）发送get或者post请求，此时服务器端必须进行再次验证才能保证安全性；
 
 ## HttpSession
-&emsp;&emsp;Http协议中说他自己时stateless即无状态的，什么意思？就是你的前一个请求是用户登陆，后一个请求是加入购物车（但是后一个请求并不知道你登陆了），请求之间并不能相互获取状态数据。如何解决这个问题？我们在设计一个类的时候，类的行为或者说函数会多次执行或者调用，类如何保证每次调用都知道当前自己状态（即上一次执行后的状态）呢？类的状态由成员变量来维持！同样，为了保持HTTP请求之间知道状态，你必须提供状态数据供每一次请求参考，这个数据状态的维持就抽象成了数据共享存储模型的设计，无非就是内存/文件/数据库（本质上也是文件）/消息 来维持了，就是现在比较流行的三种方式，客户端cookie（文件），服务端session（内存），数据库table。这样每一次Http请求都带上或者查询这些状态数据，就实现了状态的维持了！为什么不能用消息（比如上一次Http请求完成后，将数据以消息形式异步发送给下一个请求），我猜测可能的原因是消息太复杂了，没必要。消息发送接受还不是要开辟一块内存，不如直接存储在内存中供大家使用，使得程序更复杂，因此该场景不适合用消息。
+&emsp;&emsp;Http协议中说他自己时stateless即无状态的，什么意思？就是你的前一个请求是用户登陆，后一个请求是加入购物车（但是后一个请求并不知道你登陆了），请求之间并不能相互获取状态数据。如何解决这个问题？我们在设计一个类的时候，类的行为或者说函数会多次执行或者调用，类如何保证每次调用都知道当前自己状态（即上一次执行后的状态）呢？类的状态由成员变量来维持！同样，为了保持HTTP请求之间知道状态，你必须提供状态数据供每一次请求参考，这个数据状态的维持就抽象成了数据共享存储模型的设计，无非就是内存/文件/数据库（本质上也是文件）/消息 来维持了，就是现在比较流行的三种方式，客户端cookie（文件），服务端session（内存），数据库table。这样每一次Http请求都带上或者查询这些状态数据，就实现了状态的维持了！为什么不能用消息（比如上一次Http请求完成后，将数据以消息形式异步发送给下一个请求），我猜测可能的原因是消息太复杂了，没必要（比如你发一个消息给下一个HTTP请求，关键是下一个HTTP请求什么时候开始是由客户端确定的啊，他可能立即发送下一个，也可能不再发送了，这就有需要维护消息的生命周期啊）。消息发送接受还不是要开辟一块内存，不如直接存储在内存中供大家使用，使得程序更复杂，因此该场景不适合用消息。
 
-&emsp;&emsp;不过，目前有结合三种方式一起使用，从而优化用户体验！
+&emsp;&emsp;不过，目前有结合三种方式（cookie session database）一起使用，从而优化用户体验！
 
 &emsp;&emsp;发现如果不登陆京东，直接加入购物车，最多只能加50个item，此时只是在本地使用了cookie存储item；另外，如果你在chrome中禁用cookie，那么不登陆加入购物车的功能基本上是不能用的。而且而且很重要的一点，如果你禁用了cookie，京东根本无法登陆啊，有图有真相。这说明京东默认大家都使用cookie，并且登陆后设置使用cookie和user关联起来，当登陆以后，这些item会被添加到你的登陆后的购物车，并且云端同步到手机客户端，这说明登陆后在服务端存储了item，猜测可能时memcache或者database存储的；
 ![jd-no-cookie-no-login](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/jd_no_cookie_no_login.png)
@@ -215,7 +215,7 @@ Tan Ah Teck, More Java for dummies, $22.22
 
 &emsp;&emsp;如果你只是使用同一个浏览器发送请求，因为服务端将data存储到session的缘故，你的shopping cart状态得以维持，因为对于和shoppingcart相关的每一个请求，都会使用request.getSession获取这个全局的session。取出数据并返回给客户端；但是如果是换了另一个浏览器呢？
 
-&emsp;&emsp;我同时使用chrome和firefox进行购物车操作，发现尽然互不影响，这说明tomcat8 webcontainer使用了方法来辨别request来自是哪一个浏览器；进过测验之后发现，其实在/start对应的EntryServlet和/search对应的QueryServlet还有/checkout对应的CheckoutServlet都使用request.getSession(false);//已经存在就返回，不存在什么都不干！ 而在CartServlet中使用request.getSession(true);//已经存在就返回，不存则创建一个！
+&emsp;&emsp;我同时使用chrome和firefox进行购物车操作，发现尽然互不影响，这说明tomcat8 web container使用了方法来辨别request来自是哪一个浏览器；经过测验之后发现，其实在/start对应的EntryServlet和/search对应的QueryServlet还有/checkout对应的CheckoutServlet都使用request.getSession(false);//已经存在就返回，不存在什么都不干！（因为他们的业务只是读取购物车，不包含新建一个购物车） 而在CartServlet中使用request.getSession(true);//已经存在就返回，不存在则创建一个！
 
 ![start](https://github.com/kitianFresh/yaebsdbcp/tree/yaebsum/images/start.png)
 &emsp;&emsp;/start
@@ -234,7 +234,7 @@ Tan Ah Teck, More Java for dummies, $22.22
 
 
 &emsp;&emsp;实验也证明合理,我们在（没有请求过/cart前提下）请求/start和/search时，request和response header中都没有Cookie
-，因为他们都不创建session；但是当我第一次请求/cart时，response header中多了个Set-Cookie，因为第一次请求CartServlet是要创建新session的；此后一系列的request header中都自动添加了Cookie了；重要的事情来了，Tomcat8 中的Servlet都是单例模式，他是如何知道request来自哪里，又是如何轻而易举的通过request.getSession()获取到客户端想要的那个session呢？查看Set-Cookie选项你就知道了，原来服务端生成了一个JSESSIONID=4525C1896DCB743808B956F3EF9DC623唯一标示，这样servlet就可以轻而易举的维持不同session了；因为每一个请求都自带了这个ID。也就是说，**Servlet Session的实现默认依赖于客户端的cookie设置**,如果你要在禁止cookie的情况下也能实现会话，那么你需要做额外处理了。比如根据IP唯一表示（但ip也可能变化），或者让用户登陆 使用userid做唯一标示，或者将unique id隐藏在html form中（但是不适用与纯链接href），最后一种方法是每一次都通过url附带这个JSESSIONID参数发送出去，即url rewriting，使用的是response.encode(url),非常复杂，因为你得将所有的action或者link都动态生成，不管是动态页面还是静态页面中的url，你都得一个个进行url rewriting。
+，因为他们都不创建session；但是当我第一次请求/cart时，response header中多了个Set-Cookie，因为第一次请求CartServlet是要创建新session的；此后一系列的request header中都自动添加了Cookie了；重要的事情来了，Tomcat8 中的Servlet都是单例模式，他是如何知道request来自哪里，又是如何轻而易举的通过request.getSession()获取到客户端想要的那个session呢？查看Set-Cookie选项你就知道了，原来服务端在创建Session的时候生成了一个JSESSIONID=4525C1896DCB743808B956F3EF9DC623唯一标示，这样servlet就可以轻而易举的维持不同session了；因为每一个请求都自带了这个ID。也就是说，**Servlet Session的实现默认依赖于客户端的cookie设置**,如果你要在禁止cookie的情况下也能实现会话，那么你需要做额外处理了。比如根据IP唯一表示（但ip也可能变化，一般不用），或者让用户登陆 使用userid做唯一标示，或者将unique id隐藏在html form中（但是不适用与纯链接href，点击纯链接并不会发送一个附加的id参数），最后一种方法是每一次都通过url附带这个JSESSIONID参数发送出去，即url rewriting，使用的是response.encode(url),非常复杂，因为你得将所有的action或者link都动态生成，不管是动态页面还是静态页面中的url，你都得一个个进行url rewriting。
 
 &emsp;&emsp;linux下 的chrome开启多个窗口默认共享同一个域下的cookie； 采用url rewriting写的代码很难维护，必须要小心哪里没有进行url重写；
 
@@ -245,9 +245,12 @@ Tan Ah Teck, More Java for dummies, $22.22
 
 ## Authentication and Authorization
 ### 认证
-&emsp;&emsp;Tomcat容器做认证不需要应用本身认证，最简单的tomcat-user.xml和server.xml中就有manager的认证配置，默认采用的是UserDatabaseRealm，他需要配套tomcat-user.xml中的角色配置。其实就是所有的用户和角色都配置到tomcat-user.xml中，然后再通过server.xml告诉tomcat容器使用的Realm是UserDatabaseRealm；最后当然还要通过web.xml来具体限制资源访问权限；但是UserDatabaseRealm一般只是开发时候这样配置，如果是production，你最好使用数据库形式
+&emsp;&emsp;Tomcat容器做认证不需要应用本身认证，最简单的tomcat-user.xml和server.xml中就有manager的认证配置，默认采用的是UserDatabaseRealm，他需要配套tomcat-user.xml中的角色配置。其实就是所有的用户和角色都配置到tomcat-user.xml中，然后再通过server.xml告诉tomcat容器使用的Realm是UserDatabaseRealm；最后当然还要通过web.xml来具体限制资源访问权限；但是UserDatabaseRealm一般只是开发时候这样配置，如果是production，你最好使用数据库形式。
+
 &emsp;&emsp;你也可采用数据库的形式，即JDBCRealm，就是用户密码角色存储在数据库中，然后配置；此时就是在server.xml中配置说Realm采用的是JDBC就行了，然后设置相应的数据库参数，当然数据库的设计遵循一定的规则，这个可以参考官方文档；此时就不用在tomcat-user.xml中配置用户了，你需要将用户数据插入到数据库中；应用资源访问权限设置和前者一样；
+
 &emsp;&emsp;这里要特别注意的是你在修改server.xml后必须重启tomcat；但是如果在eclipse中开发即使重启也没有用，你必须删除原来的server，重新选择server，然后重启eclipse才行。
+
 &emsp;&emsp;这里删除server后遇到一个问题，就是不能选择tomcat8了，我的环境是ubuntu16.04和eclipse neon，本地安装的是tomcat8.0.37；
   1. 关闭eclipse；
   2. 你需要进入%eclipse_workspace%/.metadata/.metadata/.plugins/org.eclipse.core.runtime/.settings,然后删除org.eclipse.jst.server.tomcat.core.prefs和org.eclipse.wst.server.core.prefs；
