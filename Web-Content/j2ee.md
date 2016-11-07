@@ -209,6 +209,7 @@ Tan Ah Teck, More Java for dummies, $22.22
 &emsp;&emsp;不过，目前有结合三种方式（cookie session database）一起使用，从而优化用户体验！
 
 &emsp;&emsp;发现如果不登陆京东，直接加入购物车，最多只能加50个item，此时只是在本地使用了cookie存储item；另外，如果你在chrome中禁用cookie，那么不登陆加入购物车的功能基本上是不能用的。而且而且很重要的一点，如果你禁用了cookie，京东根本无法登陆啊，有图有真相。这说明京东默认大家都使用cookie，并且登陆后设置使用cookie和user关联起来，当登陆以后，这些item会被添加到你的登陆后的购物车，并且云端同步到手机客户端，这说明登陆后在服务端存储了item，猜测可能时memcache或者database存储的；
+
 ![jd-no-cookie-no-login](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/jd_no_cookie_no_login.png)
 
 &emsp;&emsp;tomcat8提供的servlet中的session management也是如此，HttpSession实际上是需要客户端打开cookie的，如果禁止，即使你在服务端使用request.getSession(),那也是一个新的session了。并不能维持会话状态，亲自测验过了。
@@ -233,12 +234,11 @@ Tan Ah Teck, More Java for dummies, $22.22
 &emsp;&emsp;我们可以在chrome debug tool中的network中找到cookie，查看他的各个字段；
 
 
-&emsp;&emsp;实验也证明合理,我们在（没有请求过/cart前提下）请求/start和/search时，request和response header中都没有Cookie
-，因为他们都不创建session；但是当我第一次请求/cart时，response header中多了个Set-Cookie，因为第一次请求CartServlet是要创建新session的；此后一系列的request header中都自动添加了Cookie了；重要的事情来了，Tomcat8 中的Servlet都是单例模式，他是如何知道request来自哪里，又是如何轻而易举的通过request.getSession()获取到客户端想要的那个session呢？查看Set-Cookie选项你就知道了，原来服务端在创建Session的时候生成了一个JSESSIONID=4525C1896DCB743808B956F3EF9DC623唯一标示，这样servlet就可以轻而易举的维持不同session了；因为每一个请求都自带了这个ID。也就是说，**Servlet Session的实现默认依赖于客户端的cookie设置**,如果你要在禁止cookie的情况下也能实现会话，那么你需要做额外处理了。比如根据IP唯一表示（但ip也可能变化，一般不用），或者让用户登陆 使用userid做唯一标示，或者将unique id隐藏在html form中（但是不适用与纯链接href，点击纯链接并不会发送一个附加的id参数），最后一种方法是每一次都通过url附带这个JSESSIONID参数发送出去，即url rewriting，使用的是response.encode(url),非常复杂，因为你得将所有的action或者link都动态生成，不管是动态页面还是静态页面中的url，你都得一个个进行url rewriting。
+&emsp;&emsp;以上代码可以在[这里](https://github.com/kitianFresh/yaebsdbcp)找到；实验也证明合理,我们在（没有请求过/cart前提下）请求/start和/search时，request和response header中都没有Cookie，因为他们都不创建session；但是当我第一次请求/cart时，response header中多了个Set-Cookie，因为第一次请求CartServlet是要创建新session的；此后一系列的request header中都自动添加了Cookie了；重要的事情来了，Tomcat8 中的Servlet都是单例模式，他是如何知道request来自哪里，又是如何轻而易举的通过request.getSession()获取到客户端想要的那个session呢？查看Set-Cookie选项你就知道了，原来服务端在创建Session的时候生成了一个JSESSIONID=4525C1896DCB743808B956F3EF9DC623唯一标示，这样servlet就可以轻而易举的维持不同session了；因为每一个请求都自带了这个ID。也就是说，**Servlet Session的实现默认依赖于客户端的cookie设置**,如果你要在禁止cookie的情况下也能实现会话，那么你需要做额外处理了。比如根据IP唯一表示（但ip也可能变化，一般不用），或者让用户登陆 使用userid做唯一标示，或者将unique id隐藏在html form中（但是不适用与纯链接href，点击纯链接并不会发送一个附加的id参数），最后一种方法是每一次都通过url附带这个JSESSIONID参数发送出去，即url rewriting，使用的是response.encode(url),非常复杂，因为你得将所有的action或者link都动态生成，不管是动态页面还是静态页面中的url，你都得一个个进行url rewriting。[url rewriting 版本](https://github.com/kitianFresh/YaEshop)
 
 &emsp;&emsp;linux下 的chrome开启多个窗口默认共享同一个域下的cookie； 采用url rewriting写的代码很难维护，必须要小心哪里没有进行url重写；
 
->>A servlet should be able to handle cases in which the client does not choose to join a session, such as when cookies are intentionally turned off. Until the client joins the session, isNew returns true. If the client chooses not to join the session, getSession will return a different session on each request, and isNew will always return true.
+>A servlet should be able to handle cases in which the client does not choose to join a session, such as when cookies are intentionally turned off. Until the client joins the session, isNew returns true. If the client chooses not to join the session, getSession will return a different session on each request, and isNew will always return true.
 
 ## Authentication and Authorization
 ### 认证
