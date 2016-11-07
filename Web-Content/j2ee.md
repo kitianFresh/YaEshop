@@ -218,19 +218,19 @@ Tan Ah Teck, More Java for dummies, $22.22
 &emsp;&emsp;我同时使用chrome和firefox进行购物车操作，发现尽然互不影响，这说明tomcat8 web container使用了方法来辨别request来自是哪一个浏览器；经过测验之后发现，其实在/start对应的EntryServlet和/search对应的QueryServlet还有/checkout对应的CheckoutServlet都使用request.getSession(false);//已经存在就返回，不存在什么都不干！（因为他们的业务只是读取购物车，不包含新建一个购物车） 而在CartServlet中使用request.getSession(true);//已经存在就返回，不存在则创建一个！
 
 ![start](https://github.com/kitianFresh/yaebsdbcp/tree/yaebsum/images/start.png)
-&emsp;&emsp;/start
+&emsp;&emsp;第一次请求/start，此时客户端的request肯定不含cookie，因为此业务代码cookie是由服务端的response通过set-cookie告知客户端的。选择相应作者后点击SEARCH；
 
 ![search](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/search.png)
-&emsp;&emsp;/search
+&emsp;&emsp;第二次请求/search，此时也还是没有cookie项；因为还没有触发服务端cookie的设置。我们选择book并加入购物车；
 
 ![cart](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/cart.png)
-&emsp;&emsp;/cart
+&emsp;&emsp;第三次请求/cart，我们看到此次request的返回response有一个Set-Cookie项，因为服务器在CartServlet中使用request.getSession(true);//已经存在就返回，不存在则创建一个！也就是说服务器开始创建session了，并且默认产生了一个ID这个ID就是JSESSIONID；此时我们再点击Select More Books...链接；
 
 ![start](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/start-cookie-request.png)
-&emsp;&emsp;/start
+&emsp;&emsp;第四次我们再次请求/start，注意看此时的request，里面多了一个cookie项偶！这个里面装的即使服务端告知客户端的那个JSESSIONID了；
 
 ![JSESSIONID](https://github.com/kitianFresh/yaebsdbcp/blob/yaebsum/images/JSESSIONID.png)
-&emsp;&emsp;JsessionId
+&emsp;&emsp;我们可以在chrome debug tool中的network中找到cookie，查看他的各个字段；
 
 
 &emsp;&emsp;实验也证明合理,我们在（没有请求过/cart前提下）请求/start和/search时，request和response header中都没有Cookie
@@ -238,10 +238,7 @@ Tan Ah Teck, More Java for dummies, $22.22
 
 &emsp;&emsp;linux下 的chrome开启多个窗口默认共享同一个域下的cookie； 采用url rewriting写的代码很难维护，必须要小心哪里没有进行url重写；
 
->>A servlet should be able to handle cases in which the client does not choose to join a session, such as when 
->>cookies are intentionally turned off. Until the client joins the session, isNew returns true. If the client 
->>chooses not to join the session, getSession will return a different session on each request, and isNew will 
->>always return true.
+>>A servlet should be able to handle cases in which the client does not choose to join a session, such as when cookies are intentionally turned off. Until the client joins the session, isNew returns true. If the client chooses not to join the session, getSession will return a different session on each request, and isNew will always return true.
 
 ## Authentication and Authorization
 ### 认证
