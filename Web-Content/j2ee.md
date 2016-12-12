@@ -259,6 +259,75 @@ sudo ln -s /%CATALINA_HOME%/conf conf
 sudo chmod -R a+rwx /usr/share/tomcat7/conf
 ```
 
+## EJB
+### JBOSS安装
+&emsp;&emsp;由于JBOSS版本变化太大了，现在有两种JBOSS，一个是商业版本JBOSS，一个是社区免费版本的叫wildfly；我们下载wildfly 10.1final；
+```
+//最好能在terminal下面翻墙，要不然速度很慢
+wget http://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.tar.gz
+
+tar -zxvf wildfly-10.1.0.Final.tar.gz
+
+//设置环境变量，和tomcat java一样,不过可以不用设置，现在设置这个主要是为了可以直接在其他目录运行standalone.sh，不设置的话直接到JBOSS_HOME/bin目录下面运行相应命令即可
+//系统级环境变量设置，打开/etc/profile
+export JBOSS_HOME=/opt/wildfly-10.1.0.Final
+
+//运行
+./standalone.sh
+//访问localhost:8080
+```
+&emsp;&emsp;其他教程看[官网](https://docs.jboss.org/author/display/WFLY10/Getting+Started+Guide)，很详细，不罗嗦了。
+
+&emsp;&emsp;另外，在github上提供了大量的[quickstart examples](https://github.com/wildfly/quickstart/tree/10.x#build-and-deploy-the-quickstarts)可供学习，里面有详细的安装部署说明，可以试着运行里面的例子；
+
+### eclipse中add JBOSS Server
+&emsp;&emsp;这里有一个坑，JBOSS和Tomcat不一样，可能不能在preferences->server->runtime environment中直接add wildfly10.x,尽管你已经安装了wildfly但是还是不行，会出现The import javax.ejb cannot be resolved；
+
+&emsp;&emsp;需要下载JBOSS tool进入help->Eclipse Marketplace,输入Jboss tool进行搜索，然后安装JBOSS final工具；
+
+&emsp;&emsp;结果出现错误，安装GTK即可，apt-get install libwebkitgtk-3.0-0；
+```
+Webkit is not installed.
+To use JBoss Tools Central please install libwebkitgtk library with your favourite package manager.
+To install it execute the following command:
+	For GTK2
+		Fedora, RHEL - yum install webkitgtk
+		Ubuntu - apt-get install libwebkitgtk-1.0-0
+	For GTK3
+		Fedora, RHEL - yum install webkitgtk3
+		Ubuntu - apt-get install libwebkitgtk-3.0-0
+```
+### eclipse中运行EJB
+#### EJB invocations from a remote client using JNDI
+&emsp;&emsp;老师的教程太老了，你运行的话保证你运行不了！现在的JNDI中的jndi.properties语法有点不一样了！我运行了一下午。。。终于发现解决方法了！
+
+&emsp;&emsp;你在创建完成EJB Project之后，需要先导出到wildfly中，右键项目，Export->EJB->EJB jar;作为一个jar包导出到JBOSS\_HOME/standalone/deployments/目录下面（最好先运行jboss）;部署完成之后，就可以创建客户端程序了；
+
+&emsp;&emsp;新建一个Java Project;然后注意，这里有坑！完成客户端程序之后，你会发现客户端代码里面的NumberService哪里来的啊，对于新手来说，以为是EJB自己找到的，恩，老师是这样讲的，但是其实你会发现的代码报错！因为压根找不到NumberService，所以你需要把NumberService的接口放到客户端才行！
+
+&emsp;&emsp;第二个坑，这个Java Project压根没有依靠ejb的部分啊，只有jre，怎么能找到ejb呢？ 因为你还需要一个jar包，给客户端用，jboss-client.jar,这个包在JBOSS_HOME/bin/client目录下面，右键点击项目build path->confiuration->add external jar
+
+&emsp;&emsp;还有我把mappedName也没用，因为也有错误，压根找不到NumberCreator，干脆去掉了，直接采用真实的类名访问的NumberService service = (NumberService)context.lookup("EJBTest/NumberServiceBean!bean.NumberService")；
+
+&emsp;&emsp;最后一个坑，不太清楚客户端的目录结构，结果把jndi.properties放在了错误的目录里，应该放在src/根目录下面，要不然报错
+```
+Exception in thread "main" javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
+```
+
+&emsp;&emsp;jndi.properties的内容，以前的jnp不再使用了，[新的语法在这里](https://docs.jboss.org/author/display/WFLY8/Remote+EJB+invocations+via+JNDI+-+EJB+client+API+or+remote-naming+project),另一个是[博客](https://blog.akquinet.de/2014/09/26/jboss-eap-wildfly-three-ways-to-invoke-remote-ejbs/)：
+```
+java.naming.factory.initial=org.jboss.naming.remote.client.InitialContextFactory
+java.naming.provider.url=http-remoting://localhost:8080
+jboss.naming.client.ejb.context=true
+```
+&emsp;&emsp;后来的一篇良心博客[A Simple Enterprise JavaBeans 3.1 Example with WildFly 9 (and Eclipse)](https://eai-course.blogspot.com/2012/10/a-simple-enterprise-javabeans-31.html?showComment=1478609438605#c3959201283805407567)
+
+```
+java.naming.factory.initial=org.jboss.naming.remote.client.InitialContextFactory
+java.naming.provider.url=http-remoting://localhost:8080
+jboss.naming.client.ejb.context=true
+```
+
 ###j2ee认证参考
   - [Authentication and Authorization](https://developer.appway.com/screen/ViewDocument/bookId/1272417268326?path=1272417268326|1258947867223|1258947867336&language=en&searchQuery=Screen%20Editor%20Guide&versionFilter=LatestCommittedFilter)
   - [Enable Basic Authentication for webapps in Apache Tomcat 8 - PART 1](http://sureshatt.blogspot.com/2016/05/enable-basic-authentication-for-webapps.html)
